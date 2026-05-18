@@ -1,0 +1,53 @@
+name: Playwright CI
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: self-hosted
+
+    steps:
+    - name: Clean workspace
+      shell: cmd
+      run: |
+        echo Cleaning...
+        if exist PlaywrightPythonAWH rmdir /s /q PlaywrightPythonAWH
+
+    - name: Clone repository
+      shell: cmd
+      run: |
+        git clone https://github.com/Ashwini-ashu123/PlaywrightPythonAWH.git
+
+    - name: Set Python Path
+      shell: cmd
+      run: |
+        set PATH=C:\Users\Aswini\Desktop\runner\python311;C:\Users\Aswini\Desktop\runner\python311\Scripts;%PATH%
+        python --version
+        python -m pip --version
+
+    - name: Install dependencies
+      shell: cmd
+      run: |
+        cd PlaywrightPythonAWH
+        set PATH=C:\Users\Aswini\Desktop\runner\python311;C:\Users\Aswini\Desktop\runner\python311\Scripts;%PATH%
+        python -m pip install --upgrade pip
+        pip install -r requirement.txt
+        pip install behave
+        python -m playwright install
+
+    - name: Run tests
+      shell: cmd
+      run: |
+        cd PlaywrightPythonAWH
+        set PATH=C:\Users\Aswini\Desktop\runner\python311;C:\Users\Aswini\Desktop\runner\python311\Scripts;%PATH%
+        python -m behave
+
+    - name: Upload screenshots
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: failure-screenshots
+        path: PlaywrightPythonAWH/screenshots/
+        if-no-files-found: ignore
