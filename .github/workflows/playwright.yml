@@ -33,7 +33,9 @@ jobs:
         python -c "import base64,gzip; open('playwright_AWH_py/state.json','wb').write(gzip.decompress(base64.b64decode('$data')))"
 
     - name: Run Tests
+      shell: powershell
       run: |
+        $env:PYTHONPATH = "$PWD/playwright_AWH_py"
         python -m behave playwright_AWH_py/features
 
     - name: Upload Screenshots
