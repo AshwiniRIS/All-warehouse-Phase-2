@@ -36,8 +36,9 @@ jobs:
       shell: powershell
       run: |
         $env:PYTHONPATH = "$PWD/playwright_AWH_py"
-        python -m behave playwright_AWH_py/features
-
+        $env:PYTHONIOENCODING = "utf-8"
+        python -X utf8 -m behave playwright_AWH_py/features
+        
     - name: Upload Screenshots
       if: always()
       uses: actions/upload-artifact@v4
