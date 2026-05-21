@@ -30,7 +30,7 @@ jobs:
       shell: powershell
       run: |
         $data = "${{ secrets.STATE_JSON }}"
-        python -c "import base64; open('playwright_AWH_py/state.json','wb').write(base64.b64decode('$data'))"
+        python -c "import base64; open('state.json','wb').write(base64.b64decode('$data'))"
 
     - name: Run Tests
       shell: powershell
