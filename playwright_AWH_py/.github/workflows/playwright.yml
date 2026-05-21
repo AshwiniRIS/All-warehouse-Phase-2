@@ -2,52 +2,47 @@ name: Playwright CI
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: windows-latest
 
     steps:
-    - name: Clean workspace
-      shell: cmd
-      run: |
-        echo Cleaning...
-        if exist PlaywrightPythonAWH rmdir /s /q PlaywrightPythonAWH
 
-    - name: Clone repository
-      shell: cmd
-      run: |
-        git clone https://github.com/Ashwini-ashu123/PlaywrightPythonAWH.git
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-    - name: Set Python Path
-      shell: cmd
-      run: |
-        set PATH=C:\Users\Aswini\Desktop\runner\python311;C:\Users\Aswini\Desktop\runner\python311\Scripts;%PATH%
-        python --version
-        python -m pip --version
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
 
-    - name: Install dependencies
-      shell: cmd
+    - name: Install Dependencies
       run: |
-        cd PlaywrightPythonAWH
-        set PATH=C:\Users\Aswini\Desktop\runner\python311;C:\Users\Aswini\Desktop\runner\python311\Scripts;%PATH%
         python -m pip install --upgrade pip
         pip install -r requirement.txt
         pip install behave
         python -m playwright install
 
-    - name: Run tests
-      shell: cmd
+    - name: Recreate state.json
+      shell: powershell
       run: |
-        cd PlaywrightPythonAWH
-        set PATH=C:\Users\Aswini\Desktop\runner\python311;C:\Users\Aswini\Desktop\runner\python311\Scripts;%PATH%
+        python -c "
+import base64, gzip
+data = base64.b64decode('${{ secrets.STATE_JSON }}')
+open('state.json','wb').write(gzip.decompress(data))
+"
+
+    - name: Run Tests
+      run: |
         python -m behave
 
-    - name: Upload screenshots
+    - name: Upload Screenshots
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: failure-screenshots
-        path: PlaywrightPythonAWH/screenshots/
+        path: screenshots/
         if-no-files-found: ignore
