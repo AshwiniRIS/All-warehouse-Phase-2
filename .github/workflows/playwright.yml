@@ -30,7 +30,7 @@ jobs:
       shell: powershell
       run: |
         $data = "${{ secrets.STATE_JSON }}"
-        python -c "import base64,gzip; open('playwright_AWH_py/state.json','wb').write(gzip.decompress(base64.b64decode('$data')))"
+        python -c "import base64; open('playwright_AWH_py/state.json','wb').write(base64.b64decode('$data'))"
 
     - name: Run Tests
       shell: powershell
@@ -38,7 +38,7 @@ jobs:
         $env:PYTHONPATH = "$PWD/playwright_AWH_py"
         $env:PYTHONIOENCODING = "utf-8"
         python -X utf8 -m behave playwright_AWH_py/features
-        
+
     - name: Upload Screenshots
       if: always()
       uses: actions/upload-artifact@v4
