@@ -1,7 +1,7 @@
 from ai.healer import safe_click
 class enquiryPages:
 
-  enquiryName ="Test enquiry 7"
+  enquiryName ="Git tst 1"
 
   def __init__(self,page):
     self.page = page
@@ -21,9 +21,9 @@ class enquiryPages:
 
 
   async def screen1(self):
-    await self.page.get_by_placeholder("Enter Mobile Number").fill("2345654544")
+    await self.page.get_by_placeholder("Enter Mobile Number").fill("2343654544")
     print("mobile number is entered")
-    await self.page.get_by_placeholder("you@example.com").fill("xyz@ywe.com")
+    await self.page.get_by_placeholder("you@example.com").fill("xyz@ywe12.com")
     print("email is entered")
     await self.page.get_by_role("button", name="Next").click()
     print("next button is clicked")
