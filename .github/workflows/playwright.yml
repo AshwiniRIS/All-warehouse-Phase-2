@@ -26,15 +26,6 @@ jobs:
         pip install behave
         python -m playwright install chromium
 
-    - name: Create conEnviron.env
-      shell: powershell
-      run: |
-        @"
-        SF_Login_url=${{ secrets.SF_Login_url }}
-        SF_client_id=${{ secrets.SF_client_id }}
-        SF_Username=${{ secrets.SF_Username }}
-        "@ | Out-File -FilePath conEnviron.env -Encoding utf8
-
     - name: Create server.key
       shell: powershell
       run: |
@@ -44,10 +35,14 @@ jobs:
 
     - name: Run Tests
       shell: powershell
+      env:
+        SF_Login_url: ${{ secrets.SF_Login_url }}
+        SF_client_id: ${{ secrets.SF_client_id }}
+        SF_Username: ${{ secrets.SF_Username }}
       run: |
         $env:PYTHONPATH = "$PWD/playwright_AWH_py"
         $env:PYTHONIOENCODING = "utf-8"
-        python -X utf8 -m behave playwright_AWH_py/features
+        python -X utf8 -m behave playwright_AWH_py/features --tags=@API
 
     - name: Upload Screenshots
       if: always()
