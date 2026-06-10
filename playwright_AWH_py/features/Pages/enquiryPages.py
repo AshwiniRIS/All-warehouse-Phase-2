@@ -1,10 +1,27 @@
+import asyncio
+from multiprocessing import context
+
 from ai.healer import safe_click
+from support.shared_data import shared
+import time
+import requests
+
 class enquiryPages:
 
-  enquiryName ="Git tst 1"
+  enquiryName = shared.get("enquiry_name") 
 
   def __init__(self,page):
     self.page = page
+
+  async def navigateToAWH(self):
+    locator = self.page.locator("//button[@title='App Launcher']")
+    await locator.wait_for(timeout=30000)
+    await locator.click()
+    AWH_locator = self.page.get_by_text("All Warehouses")
+    await AWH_locator.wait_for(timeout=30000)
+    await AWH_locator.click()
+    print("user is successfully navigated to AWH application")
+    
 
   async def clickEnquiryTab(self):
     try:
@@ -131,12 +148,14 @@ class enquiryPages:
     print("interested location range is entered")
     await self.page.locator("//button[@name='SaveEdit']").click()
     print("save button is clicked")
-    enquiry_link = self.page.locator(f"(//a[@title='{enquiryPages.enquiryName} | Enquiry'])[2]")
+    enquiry_name = shared.get("enquiry_name")
+    if not enquiry_name: raise Exception("Enquiry name not found in shared data")
+    enquiry_link = self.page.locator(f"(//a[@title='{enquiry_name} | Enquiry'])[2]")
     await enquiry_link.wait_for(state="visible", timeout=20000)
     await enquiry_link.click()
     print("Enquiry record opened")
 
-  async def editEnquiry(self):
+  async def ClosedEnquiry(self):
 
     # Locate the scrollable main column
     scrollable = self.page.locator(
@@ -163,6 +182,10 @@ class enquiryPages:
     await self.page.get_by_role("option", name="below 10000").click()
     print("size range is updated")
 
+    # Update Size in sqfts
+    await self.page.locator("//input[@name='Size_in_sqfts__c']").fill("2000")
+    print("size in sqfts is updated")
+
     # Update Status
     await self.page.get_by_role("combobox", name="Status").click()
     await self.page.get_by_role("option", name="Closed").click()
@@ -185,8 +208,9 @@ class enquiryPages:
     Opp = await self.page.locator("records-entity-label",  has_text="Opportunities").text_content()
     assert Opp == "Opportunities"
     print("user is successfully navigated to opportunity page", Opp)
-    Oppname =await self.page.locator("h1 lightning-formatted-text", has_text=enquiryPages.enquiryName).nth(1).text_content()
-    assert Oppname == enquiryPages.enquiryName
+    enquiry_name = shared.get("enquiry_name")
+    Oppname =await self.page.locator("h1 lightning-formatted-text", has_text=enquiry_name).nth(1).text_content()
+    assert Oppname == enquiry_name
     print("opportunity is created successfully", Oppname, Opp)
 
 
@@ -223,10 +247,39 @@ class enquiryPages:
 
     await self.page.locator("//button[@name='SaveEdit']").click()
     print("save button is clicked")
-    
 
 
+  async def waitTillAccountCreated(self, access_token, instance_url, enquiry_id):
 
+    print("waiting for account creation")
+    await asyncio.sleep(300)
+
+    query = f"SELECT Id, Contact_Person__r.Name FROM Enquiry__c WHERE Id = '{enquiry_id}'"
+    url = f"{instance_url}/services/data/v64.0/query"
+
+    response = requests.get(
+        url,
+        headers={"Authorization": f"Bearer {access_token}"},
+        params={"q": query}
+    )
+
+    print("Status Code:", response.status_code)
+    print("Response:", response.text)
+
+    data = response.json()
+
+    if isinstance(data, dict):
+        records = data.get("records", [])
+    else:
+        records = data
+
+    if records and records[0].get("Contact_Person__r") and records[0]["Contact_Person__r"].get("Name"):
+        contact_name = records[0]["Contact_Person__r"]["Name"]
+        print("Contact Person found:", contact_name)
+        shared["contact_name"] = contact_name
+        return contact_name
+
+    raise Exception("Account not created")
 
 
 

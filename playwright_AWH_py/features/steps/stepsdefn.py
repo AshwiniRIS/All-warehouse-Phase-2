@@ -1,26 +1,172 @@
 from behave import step
 from Pages.loginPages import loginPages as lp
 from Pages.enquiryPages import enquiryPages as ep
-from Pages.APIPages import APIPages as ap
+from Pages.APIPages import APIPages 
 from Pages.opportunityPages import opportunityPages as opp
 from Pages.siteVisit import siteVisit as sv
+from support.shared_data import shared
+
+#________________________________________API Login_____________________________________________________________
+
+@step("go to salesforce and create the enquiry")
+def step_impl(context):
+
+    context.header = {
+        "Authorization": f"Bearer {context.access_token}",
+        "Content-Type": "application/json"
+    }
+
+    print("Token is ready for API calls")
+
+
+@step("create enquiry record using API with '{name}' '{phone}' '{email}'")
+def step_create_enquiry(context, name, phone, email):
+    context.enquiry_name = name 
+
+    context.api_page = APIPages(
+        context.instance_url,
+        context.header
+    )
+
+    context.api_page.create_enquiry(name, phone, email)
+
+@step("enquiry should be created successfully")
+def step_validate_enquiry(context):
+
+    context.enquiry_id = context.api_page.validate_enquiry_created()
+
+    
+@step("store enquiry id")
+def step_impl(context):
+
+    shared["enquiry_id"] = context.enquiry_id
+    shared["enquiry_name"] = context.enquiry_name
+    print("Stored ID:", shared["enquiry_id"])
+    print("SHARED DATA:", shared)
+    print("Enquiry Name:", shared["enquiry_name"])
+
+
+#______________________________________________UI Login ___________________________________________________
+
+@step("login to the salesforce application using JWT")
+def loginWithJWT(context):
+
+    async def login():
+
+        frontdoor_url = (
+            f"{context.instance_url}"
+            f"/secur/frontdoor.jsp?sid={context.access_token}"
+        )
+
+        print("Opening:", frontdoor_url)
+
+        # 🔥 IMPORTANT: ensure viewport is correct
+        await context.page.set_viewport_size({"width": 1400, "height": 900})
+
+        await context.page.goto(frontdoor_url, wait_until="domcontentloaded")
+
+        # 🔥 WAIT FOR REAL SALESFORCE REDIRECT
+        await context.page.wait_for_url("**/lightning/**", timeout=120000)
+
+        # 🔥 WAIT FOR LIGHTNING APP ROOT (CRITICAL FIX)
+        await context.page.wait_for_selector(
+            "button[title='App Launcher']",
+            timeout=120000
+        )
+        print("Login successful - UI loaded")
+
+        # DEBUG (VERY IMPORTANT)
+        print("Current URL:", context.page.url)
+        await context.page.screenshot(path="sf_login.png", full_page=True)
+
+    context.loop.run_until_complete(login())
+
+@step("user should be navigate the enquiry created in API")
+def step_impl(context):
+
+     async def open_enquiry():
+
+        enquiry_id = shared.get("enquiry_id")
+        expected_name = shared.get("enquiry_name")  # ✔ from API
+
+        print("Retrieved Enquiry ID:", enquiry_id)
+        print("Expected Name from API:", expected_name)
+
+        if not enquiry_id:
+            raise Exception("Enquiry ID not found in shared data")
+
+        record_url = (
+            f"{context.instance_url}/lightning/r/"
+            f"{enquiry_id}/view"
+        )
+
+        print("Opening Record:", record_url)
+
+        await context.page.goto(record_url, wait_until="domcontentloaded")
+        print("dom loaded")
+        await context.page.wait_for_selector("h1 lightning-formatted-text",timeout=120000)
+        
+
+        title_locator = context.page.locator(
+            "h1 lightning-formatted-text"
+        )
+
+        await title_locator.wait_for(state="visible", timeout=120000)
+
+        actual_name = (await title_locator.text_content()).strip()
+
+        print("UI Name:", actual_name)
+
+        assert actual_name == expected_name, \
+            f"Mismatch: UI={actual_name}, API={expected_name}"
+
+        await context.page.screenshot(
+            path="enquiry_record.png",
+            full_page=True
+        )
+     context.loop.run_until_complete(open_enquiry())
+
+
+
+@step("user should be navigate to the AWH application")
+def navigateToAWH(context):
+    context.ep = ep(context.page)
+    context.loop.run_until_complete(context.ep.navigateToAWH())
+
+@step("User needs to wait for 5mins to get the account created in salesforce")
+def waitForAccountCreation(context):
+    context.loop.run_until_complete(context.ep.waitTillAccountCreated(context.access_token,context.instance_url,shared.get("enquiry_id")))
+
+@step("add the interested Location to the enquiry record and save it")
+def addInterestedLocation(context):
+    context.loop.run_until_complete(context.ep.addInterestedLocation())
+    context.loop.run_until_complete(context.ep.EditInterestedLocation())
+
+
+@step("Edit the enquiry and update the additional details")
+def editAndUpdateEnquiry(context):
+    context.loop.run_until_complete(context.ep.editEnquiryDetails())
+    
+
+@step("update the enquiry status to closed and qualified the enquiry")
+def closeAndQualifyEnquiry(context):
+    context.loop.run_until_complete(context.ep.ClosedEnquiry())
+
+@step("Verify the user is successfully able to navigate to opportunity page")
+def navigateToOpp(context):
+    context.loop.run_until_complete(context.ep.navigateToOpp())
+
+
+   
+
+#__________________________________________________________________________________________________________________
 
 
 @step("go to the salesforce test environment")
 def navigateToSF(context):
+
     context.lp = lp(context.page)
     context.loop.run_until_complete(context.lp.goToSalesforce())
-
-
-@step("give the username and password")
-def enterCredentials(context):
-    context.loop.run_until_complete(context.lp.enterUsername())
-    context.loop.run_until_complete(context.lp.enterPassword())
-
-
-@step("Click on the Login button")
-def clickLoginButton(context):
-    context.loop.run_until_complete(context.lp.clickLogin())
 
 
 @step("verify the user is successfully able to login into the salesforce application")
@@ -37,8 +183,11 @@ def verifyLogin(context):
         )
         print("📸 Screenshot captured in step")
         raise e
-    
-    
+
+
+
+
+
 @step("click on the Enquiry tab and click on the New button")
 def clickEnquiryTab(context):
     context.ep = ep(context.page)
@@ -61,34 +210,13 @@ def searchenquiry(context):
 def verifyEnquiry(context):
     context.loop.run_until_complete(context.ep.verifyEnquiry())
 
-@step("add the interested Location to the enquiry record and save it")
-def addInterestedLocation(context):
-    context.loop.run_until_complete(context.ep.addInterestedLocation())
-    context.loop.run_until_complete(context.ep.EditInterestedLocation())
 
-@step("Edit the enquiry and update the details and save the record")
-def editEnquiry(context):
-    context.loop.run_until_complete(context.ep.editEnquiry())
+
+
   
 
-@step("Verify the user is successfully able to navigate to opportunity page")
-def navigateToOpp(context):
-    context.loop.run_until_complete(context.ep.navigateToOpp())
+
     
-
-@step("I have enquiry payload")
-def createEnquiryPayload(context):
-    pass
-
-@step("I send create enquiry request")
-def sendCreateEnquiryRequest(context):
-    context.ap = ap(context.base_URL, context.header)
-    payload = context.ap.create_enquiry()   
-    context.enquiryName = payload["Name"]
-
-@step("enquiry should be created successfully")
-def verifyEnquiryCreated(context):
-    context.ap.validate_enquiry_created()
 
 @step("click on the edit and add the necessary fields to the enquiry")
 def editEnquiry(context):
