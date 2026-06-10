@@ -3,7 +3,7 @@ name: Playwright CI
 on:
   push:
     branches:
-      - main
+      - DEV   
 
 jobs:
   test:
@@ -26,11 +26,21 @@ jobs:
         pip install behave
         python -m playwright install chromium
 
-    - name: Recreate state.json
+    - name: Create conEnviron.env
       shell: powershell
       run: |
-        $data = "${{ secrets.STATE_JSON }}"
-        python -c "import base64,gzip; open('state.json','wb').write(gzip.decompress(base64.b64decode('$data')))"
+        @"
+        SF_Login_url=${{ secrets.SF_Login_url }}
+        SF_client_id=${{ secrets.SF_client_id }}
+        SF_Username=${{ secrets.SF_Username }}
+        "@ | Out-File -FilePath conEnviron.env -Encoding utf8
+
+    - name: Create server.key
+      shell: powershell
+      run: |
+        @"
+        ${{ secrets.SF_PRIVATE_KEY }}
+        "@ | Out-File -FilePath playwright_AWH_py/server.key -Encoding utf8
 
     - name: Run Tests
       shell: powershell
