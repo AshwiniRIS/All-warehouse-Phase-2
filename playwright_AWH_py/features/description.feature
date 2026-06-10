@@ -17,7 +17,7 @@ Scenario Outline: Create Enquiry via Salesforce API
     And Verify the user is successfully able to navigate to opportunity page
     Examples:
       | name          | phone      | email                    |
-      | Joseph        | 9889543210 | test@gmail123.com        |
+      | Brito         | 9009543210 | brito@testgmail123.com        |
 
 @EnquiryPage
 Scenario: Login to the salesforce application via API and create the enquiry record

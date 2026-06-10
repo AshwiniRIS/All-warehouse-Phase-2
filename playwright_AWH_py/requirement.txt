@@ -3,3 +3,4 @@ behave
 requests
 pytest
 PyJWT==2.8.0
+python-dotenv
