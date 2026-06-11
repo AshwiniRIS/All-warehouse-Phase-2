@@ -1,7 +1,7 @@
 Feature: Salesforce login
 
  @API
-Scenario Outline: Create Enquiry via Salesforce API
+Scenario Outline: Create Enquiry via Salesforce API and perform the E2E flow in the SF application
     Given go to salesforce and create the enquiry
     When create enquiry record using API with '<name>' '<phone>' '<email>'
     Then enquiry should be created successfully
@@ -15,23 +15,18 @@ Scenario Outline: Create Enquiry via Salesforce API
     And Edit the enquiry and update the additional details
     Then update the enquiry status to closed and qualified the enquiry
     And Verify the user is successfully able to navigate to opportunity page
+    # Then go the Opportunity tabe and click on the opportunity record which is created from the enquiry record
+    And verify the opportunity is in "Qualified" stage
+    And go to the search unit tab and add the unit in the unit options
+    Then click on the generate proposal and send the proposal to the customer
+    And verify the opportunity is in "Proposal" stage
+    And Click on the schedule site visit and create the site visit record
+    # Then verify the site visit record is created successfully
+    And verify the opportunity is in "Site Visit" stage
     Examples:
       | name          | phone      | email                    |
-      | Ferzina       | 0009543210 | ferzina@testgmail123.com        |
-
-@EnquiryPage
-Scenario: Login to the salesforce application via API and create the enquiry record
-  Given login to the salesforce application using JWT
-  # Then user should be navigate to the AWH application
-  Then user should be navigate the enquiry created in API
-  # Then click on the Enquiry tab and click on the New button
-  # And fill the mandatory fields and click on the save button
-  # Then Go to the enquiry tab and verify the record is created
-  # Then add the interested Location to the enquiry record and save it
-  # And click on the edit and add the necessary fields to the enquiry
-  # And Verify the user is successfully able to navigate to opportunity page
+      | Aniruddha     | 0009083210 | anirina@testgmail123.com        |
   
-
 @OpportunityPage
 Scenario: Login to the salesforce application and navigate to opprtunity page
   Given I login using JWT
@@ -42,6 +37,9 @@ Scenario: Login to the salesforce application and navigate to opprtunity page
   And go to the search unit tab and add the unit in the unit options
   Then click on the generate proposal and send the proposal to the customer
   And verify the opportunity is in "Proposal" stage
+  And Click on the schedule site visit and create the site visit record
+  Then verify the site visit record is created successfully
+  And verify the opportunity is in "Site Visit" stage
 
   @SiteVisitPage
   Scenario: Login to the salesforce application and navigate to sitevisit page

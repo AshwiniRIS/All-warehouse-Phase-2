@@ -177,15 +177,6 @@ class enquiryPages:
     await self.page.locator("//button[@name='Edit']").click()
     print("edit button is clicked")
 
-    # Update Size Range
-    await self.page.get_by_role("combobox", name="Size Range").click()
-    await self.page.get_by_role("option", name="below 10000").click()
-    print("size range is updated")
-
-    # Update Size in sqfts
-    await self.page.locator("//input[@name='Size_in_sqfts__c']").fill("2000")
-    print("size in sqfts is updated")
-
     # Update Status
     await self.page.get_by_role("combobox", name="Status").click()
     await self.page.get_by_role("option", name="Closed").click()
@@ -228,10 +219,15 @@ class enquiryPages:
     await self.page.get_by_role("combobox", name="Nature of Purchase").click()
     await self.page.get_by_role("option", name="Rent").click()
     print("nature of purchase is selected")
-
+    
+     # Update Size Range
     await self.page.get_by_role("combobox", name="Size Range").click()
-    await self.page.get_by_role("option",name="below 10000").click()
+    await self.page.get_by_role("option", name="below 10000").click()
     print("size range is updated")
+
+    # Update Size in sqfts
+    await self.page.locator("//input[@name='Size_in_sqfts__c']").fill("2000")
+    print("size in sqfts is updated")
 
     await self.page.get_by_role("combobox", name="Service Required").click()
     await self.page.get_by_role("option", name="Shed").click()
@@ -252,7 +248,7 @@ class enquiryPages:
   async def waitTillAccountCreated(self, access_token, instance_url, enquiry_id):
 
     print("waiting for account creation")
-    await asyncio.sleep(300)
+    await asyncio.sleep(320)
 
     query = f"SELECT Id, Contact_Person__r.Name FROM Enquiry__c WHERE Id = '{enquiry_id}'"
     url = f"{instance_url}/services/data/v64.0/query"

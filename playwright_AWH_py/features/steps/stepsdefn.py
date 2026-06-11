@@ -60,24 +60,56 @@ def loginWithJWT(context):
 
         print("Opening:", frontdoor_url)
 
-        # 🔥 IMPORTANT: ensure viewport is correct
-        await context.page.set_viewport_size({"width": 1400, "height": 900})
+        await context.page.set_viewport_size(
+            {"width": 1400, "height": 900}
+        )
 
-        await context.page.goto(frontdoor_url, wait_until="domcontentloaded")
+        await context.page.goto(
+            frontdoor_url,
+            wait_until="domcontentloaded"
+        )
 
-        # 🔥 WAIT FOR REAL SALESFORCE REDIRECT
-        await context.page.wait_for_url("**/lightning/**", timeout=120000)
+        # ===== DEBUG START =====
+        # await context.page.wait_for_load_state("domcontentloaded")
+        # print("Current URL:", context.page.url)
 
-        # 🔥 WAIT FOR LIGHTNING APP ROOT (CRITICAL FIX)
+        # try:
+        #     await context.page.wait_for_selector(
+        #         "button[title='App Launcher']",
+        #         timeout=30000
+        #     )
+        #     print("Salesforce Lightning loaded")
+        # except Exception as e:
+        #     print("Lightning not loaded")
+        #     print("Current URL:", context.page.url)
+        #     print("Error:", str(e))
+
+        #     await context.page.screenshot(
+        #         path="login_failed.png",
+        #         full_page=True
+        #     )
+        #     raise
+        # ===== DEBUG END =====
+
+        # ===== ORIGINAL CI CODE =====
+        await context.page.wait_for_url(
+            "**/lightning/**",
+            timeout=120000
+        )
+        
         await context.page.wait_for_selector(
             "button[title='App Launcher']",
             timeout=120000
         )
+        
         print("Login successful - UI loaded")
-
-        # DEBUG (VERY IMPORTANT)
+        
         print("Current URL:", context.page.url)
-        await context.page.screenshot(path="sf_login.png", full_page=True)
+        await context.page.screenshot(
+            path="sf_login.png",
+            full_page=True
+        )
+        # ===== ORIGINAL CI CODE =====
 
     context.loop.run_until_complete(login())
 
@@ -230,14 +262,17 @@ def clickOpportunity(context):
 
 @step('verify the opportunity is in "{stagename}" stage')
 def verifyStage(context, stagename):
+    context.opp = opp(context.page)
     context.loop.run_until_complete(context.opp.verifyStages(stagename))
 
 @step("go to the search unit tab and add the unit in the unit options")
 def searchUnit(context):
+    context.opp = opp(context.page)
     context.loop.run_until_complete(context.opp.searchUnit())
 
 @step("click on the generate proposal and send the proposal to the customer")
 def generateProposalPDF(context):
+    context.opp = opp(context.page)
     context.loop.run_until_complete(context.opp.generateProposal())
 
 @step("Click on the schedule site visit and create the site visit record")
