@@ -64,6 +64,8 @@ def loginWithJWT(context):
             {"width": 1400, "height": 900}
         )
 
+        
+
         await context.page.goto(
             frontdoor_url,
             wait_until="domcontentloaded"

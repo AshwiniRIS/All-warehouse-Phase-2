@@ -26,7 +26,8 @@ class siteVisit:
         print("save button is clicked")
         await self.page.wait_for_timeout(10000)
         enquiry_name = shared.get("enquiry_name")
-        await self.page.locator(f"//a[contains(text(),'{enquiry_name}-{future_date}')]")
+        site_visit_name = self.page.locator(f"//a[contains(text(),'{enquiry_name}-{future_date}')]")
+        await site_visit_name
         print("Site visit is created successfully", f"{enquiry_name}-{future_date}") 
     
     async def verifySitevisit(self):
