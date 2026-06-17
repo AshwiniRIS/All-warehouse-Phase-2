@@ -5,6 +5,8 @@ class opportunityPages:
     def __init__(self,page):
         self.page = page
     enquiry_name = "Ferzina"
+
+    
     async def navigateToOpp(self):
         await self.page.get_by_title("Show Navigation Menu").click()
         await self.page.locator("//a[@role='menuitem' and @data-label='Opportunities']").click()
@@ -98,6 +100,8 @@ class opportunityPages:
         assert await self.page.locator(f"//td[contains(text(),'{pdftext}')]").is_visible() == True
         await self.page.get_by_role("button", name="Show more actions").click()
         await self.page.get_by_role("menuitem",name="Send Proposal to Customer").click()
+        await self.page.get_by_role("button", name="Cancel and close").click()
+
 
     
 

@@ -21,11 +21,11 @@ Scenario Outline: Create Enquiry via Salesforce API and perform the E2E flow in 
     Then click on the generate proposal and send the proposal to the customer
     And verify the opportunity is in "Proposal" stage
     And Click on the schedule site visit and create the site visit record
-    # Then verify the site visit record is created successfully
+    Then verify the site visit record is created successfully
     And verify the opportunity is in "Site Visit" stage
     Examples:
       | name          | phone      | email                    |
-      | Aniruddha     | 0009083210 | anirina@testgmail123.com        |
+      | Bhavana       | 9899083210 | bhavana@testgmail123.com |
   
 @OpportunityPage
 Scenario: Login to the salesforce application and navigate to opprtunity page

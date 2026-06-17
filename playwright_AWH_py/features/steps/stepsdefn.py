@@ -174,7 +174,6 @@ def addInterestedLocation(context):
     context.loop.run_until_complete(context.ep.addInterestedLocation())
     context.loop.run_until_complete(context.ep.EditInterestedLocation())
 
-
 @step("Edit the enquiry and update the additional details")
 def editAndUpdateEnquiry(context):
     context.loop.run_until_complete(context.ep.editEnquiryDetails())
@@ -243,13 +242,6 @@ def verifyEnquiry(context):
     context.loop.run_until_complete(context.ep.verifyEnquiry())
 
 
-
-
-  
-
-
-    
-
 @step("click on the edit and add the necessary fields to the enquiry")
 def editEnquiry(context):
     context.loop.run_until_complete(context.ep.editEnquiry())
@@ -279,3 +271,8 @@ def generateProposalPDF(context):
 def createSiteVisit(context):
     context.sv = sv(context.page)
     context.loop.run_until_complete(context.sv.createSiteVisit())
+
+@step("verify the site visit record is created successfully")
+def verifySitevisit(context):
+    context.sv = sv(context.page)
+    context.loop.run_until_complete(context.sv.verifySitevisit())

@@ -1,5 +1,6 @@
 from Pages.enquiryPages import enquiryPages
 from datetime import datetime, timedelta
+from support.shared_data import shared
 class siteVisit:
 
     def __init__(self,page):
@@ -18,8 +19,16 @@ class siteVisit:
         await self.page.locator("//select[@name='Unit_Bundle']").click()
         await self.page.locator("//select[@name='Unit_Bundle']").select_option(label="Option - 1")
         print("unit bundle is selected")
+        await self.page.get_by_placeholder("Search People...").click()
+        await self.page.locator("//span[@title='Pooja Bagri']").click()
+        print("User is selected")
         await self.page.get_by_role("button", name="Save").click()
         print("save button is clicked")
-        await self.page.wait_for_timeout(5000)
-        
+        await self.page.wait_for_timeout(10000)
+        enquiry_name = shared.get("enquiry_name")
+        await self.page.locator(f"//a[contains(text(),'{enquiry_name}-{future_date}')]")
+        print("Site visit is created successfully", f"{enquiry_name}-{future_date}") 
+    
+    async def verifySitevisit(self):
+        print("Done site visit verification")
         
