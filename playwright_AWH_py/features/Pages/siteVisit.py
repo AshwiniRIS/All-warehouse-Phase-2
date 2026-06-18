@@ -1,7 +1,9 @@
 from Pages.enquiryPages import enquiryPages
 from datetime import datetime, timedelta
 from support.shared_data import shared
+from playwright.async_api import expect
 class siteVisit:
+
 
     def __init__(self,page):
         self.page = page
@@ -26,9 +28,11 @@ class siteVisit:
         print("save button is clicked")
         await self.page.wait_for_timeout(10000)
         enquiry_name = shared.get("enquiry_name")
-        site_visit_name = self.page.locator(f"//a[contains(text(),'{enquiry_name}-{future_date}')]")
-        await site_visit_name
-        print("Site visit is created successfully", f"{enquiry_name}-{future_date}") 
+        Convert_future_date = datetime.strptime(future_date, "%d-%b-%Y")
+        future_date_sf = Convert_future_date.strftime("%d-%m-%Y")
+        site_visit_name = self.page.locator(f"//a[contains(text(),'{enquiry_name}-{future_date_sf}')]")
+        await expect(site_visit_name).to_be_visible()
+        print("Site visit is created successfully", f"{enquiry_name}-{future_date_sf}") 
     
     async def verifySitevisit(self):
         print("Done site visit verification")

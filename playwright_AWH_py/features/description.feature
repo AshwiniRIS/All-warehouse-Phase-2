@@ -25,7 +25,7 @@ Scenario Outline: Create Enquiry via Salesforce API and perform the E2E flow in 
     And verify the opportunity is in "Site Visit" stage
     Examples:
       | name          | phone      | email                    |
-      | Bhavana       | 9899083210 | bhavana@testgmail123.com |
+      | Anish test    | 9899088767 | anishTest@testgmail123.com |
   
 @OpportunityPage
 Scenario: Login to the salesforce application and navigate to opprtunity page
