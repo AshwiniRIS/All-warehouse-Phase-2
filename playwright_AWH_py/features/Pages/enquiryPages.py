@@ -176,6 +176,7 @@ class enquiryPages:
     # Click Edit button
     await self.page.locator("//button[@name='Edit']").click()
     print("edit button is clicked")
+    await self.page.wait_for_timeout(5000) 
 
     # Update Status
     await self.page.get_by_role("combobox", name="Status").click()
