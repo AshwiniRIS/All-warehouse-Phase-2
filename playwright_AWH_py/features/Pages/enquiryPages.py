@@ -160,20 +160,20 @@ class enquiryPages:
   async def ClosedEnquiry(self):
 
     # Locate the scrollable main column
-    scrollable = self.page.locator(
-        "//flexipage-record-home-scrollable-column[@class='col main-col slds-col']"
-    ).first
+    # scrollable = self.page.locator(
+    #     "//flexipage-record-home-scrollable-column[@class='col main-col slds-col']"
+    # ).first
 
-    await scrollable.wait_for(state="visible", timeout=10000)
+    # await scrollable.wait_for(state="visible", timeout=10000)
 
-    # Scroll completely to top
-    await scrollable.evaluate("""
-        el => {
-            el.scrollTop = 0;
-        }
-    """)
+    # # Scroll completely to top
+    # await scrollable.evaluate("""
+    #     el => {
+    #         el.scrollTop = 0;
+    #     }
+    # """)
 
-    print("Scrolled to top")
+    # print("Scrolled to top")
 
     # Click Edit button
     await self.page.locator("//button[@name='Edit']").click()
