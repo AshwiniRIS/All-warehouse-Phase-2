@@ -30,7 +30,7 @@ Scenario Outline: Create Enquiry via Salesforce API and perform the E2E flow in 
     Examples:
     
       | name       | phone      | email                    |
-      | Vishnu     | 0999080896 | vishnu@2testgmail123.com |
+      | Shiva     | 0999080896 | Shiva@2testgmail123.com |
   
 
 
