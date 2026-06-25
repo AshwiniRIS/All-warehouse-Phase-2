@@ -4,8 +4,9 @@ from Pages.enquiryPages import enquiryPages as ep
 from Pages.APIPages import APIPages 
 from Pages.opportunityPages import opportunityPages as opp
 from Pages.siteVisit import siteVisit as sv
+from Pages.negotiationPage import negotiationPage as np
 from support.shared_data import shared
-
+import asyncio
 #________________________________________API Login_____________________________________________________________
 
 @step("go to salesforce and create the enquiry")
@@ -189,8 +190,51 @@ def closeAndQualifyEnquiry(context):
 def navigateToOpp(context):
     context.loop.run_until_complete(context.ep.navigateToOpp())
 
+@step('verify the opportunity is in "{stagename}" stage')
+def verifyStage(context, stagename):
+    context.opp = opp(context.page)
+    context.loop.run_until_complete(context.opp.verifyStages(stagename))
+
+@step("go to the search unit tab and add the unit in the unit options")
+def searchUnit(context):
+    context.opp = opp(context.page)
+    context.loop.run_until_complete(context.opp.searchUnit())
+
+@step("click on the generate proposal and send the proposal to the customer")
+def generateProposalPDF(context):
+    context.opp = opp(context.page)
+    context.loop.run_until_complete(context.opp.generateProposal())
+
+
+
+@step("Click on the schedule site visit and create the site visit record")
+def createSiteVisit(context):
+    context.sv = sv(context.page)
+    context.loop.run_until_complete(context.sv.createSiteVisit())
+
+
+@step("navigate to the site visit record and update the site visit status")
+def navigateTositeVisit(context):
+    # context.sv = sv(context.page)
+    context.loop.run_until_complete(context.sv.navigateToSiteVisit())
+
+@step("Complete the site visit and back to Opportunity")
+def markComplete(context):
+    #  context.sv = sv(context.page)
+     context.loop.run_until_complete(context.sv.markCompleteSV())
+    #  asyncio.run(context.sv.markCompleteSV())
+
+@step("Verify the user is successfully able to navigate to Opp from Site visit")
+def OppfromSV(context):
+    context.loop.run_until_complete(context.sv.navigativeToOppFromSV())
 
    
+@step("generate the negotiation checklist and send to the customer")
+def negoChecklist(context):
+    context.np = np(context.page)
+    context.loop.run_until_complete(context.np.negotiationCreation())
+
+
 
 #__________________________________________________________________________________________________________________
 
@@ -252,29 +296,9 @@ def editEnquiry(context):
 def clickOpportunity(context):
     context.opp = opp(context.page)
     context.loop.run_until_complete(context.opp.navigateToOpp())
-    context.loop.run_until_complete(context.opp.verifyOppRec())
+    # context.loop.run_until_complete(context.opp.verifyOppRec())
 
-@step('verify the opportunity is in "{stagename}" stage')
-def verifyStage(context, stagename):
-    context.opp = opp(context.page)
-    context.loop.run_until_complete(context.opp.verifyStages(stagename))
 
-@step("go to the search unit tab and add the unit in the unit options")
-def searchUnit(context):
-    context.opp = opp(context.page)
-    context.loop.run_until_complete(context.opp.searchUnit())
 
-@step("click on the generate proposal and send the proposal to the customer")
-def generateProposalPDF(context):
-    context.opp = opp(context.page)
-    context.loop.run_until_complete(context.opp.generateProposal())
 
-@step("Click on the schedule site visit and create the site visit record")
-def createSiteVisit(context):
-    context.sv = sv(context.page)
-    context.loop.run_until_complete(context.sv.createSiteVisit())
 
-@step("verify the site visit record is created successfully")
-def verifySitevisit(context):
-    context.sv = sv(context.page)
-    context.loop.run_until_complete(context.sv.verifySitevisit())

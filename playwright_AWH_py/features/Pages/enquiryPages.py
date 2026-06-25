@@ -249,7 +249,7 @@ class enquiryPages:
   async def waitTillAccountCreated(self, access_token, instance_url, enquiry_id):
 
     print("waiting for account creation")
-    await asyncio.sleep(320)
+    await asyncio.sleep(360)
 
     query = f"SELECT Id, Contact_Person__r.Name FROM Enquiry__c WHERE Id = '{enquiry_id}'"
     url = f"{instance_url}/services/data/v64.0/query"

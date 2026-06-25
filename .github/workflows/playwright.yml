@@ -51,3 +51,33 @@ jobs:
         name: failure-screenshots
         path: screenshots/
         if-no-files-found: ignore
+
+    - name: Send Email Notification
+      if: always()
+      uses: dawidd6/action-send-mail@v3
+      with:
+      server_address: ://gmail.com
+      server_port: 465
+      username: ${{secrets.Email_Username}}
+      password: ${{secrets.Email_Password}}
+      subject: >-
+        ${{job.status == 'success' && 'PASSED' || 'FAILED'}}:
+        Workflow[${{github.workflow}}] on ${{github.ref_name}}
+      body: | 
+        Hi Team,
+            
+            The GitHub Action workflow has finished execution.
+
+            - Repository: ${{ github.repository }}
+            - Branch: ${{ github.ref_name }}
+            - Status: ${{ job.status }}
+            - Triggered By: ${{ github.actor }}
+            - Commit Message: ${{ github.event.head_commit.message }}
+
+            View full log details here:
+            https://github.com{{ github.repository }}/actions/runs/${{ github.run_id }}
+      to: ashwinimca96@gmail.com, aswini.p@rudhrainfosolutions.com
+      from: Github actions CI CD
+
+
+      

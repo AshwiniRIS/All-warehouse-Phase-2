@@ -7,6 +7,8 @@ from playwright.async_api import async_playwright
 from jwt_auth import get_access_token
 from Pages.loginPages import loginPages as lp
 from Pages.enquiryPages import enquiryPages as ep
+from Pages.siteVisit import siteVisit as sv
+from Pages.negotiationPage import negotiationPage as np
 
 def before_all(context):
 
@@ -27,7 +29,7 @@ def before_scenario(context, scenario):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     context.loop = loop
-   
+    
 
     async def setup():
 
@@ -38,16 +40,19 @@ def before_scenario(context, scenario):
             slow_mo=500
         )
 
-        context.context = await context.browser.new_context()
+        context.context = await context.browser.new_context(record_video_dir = "screenshots/videos", viewport ={"width":1200, "height":720})
 
         context.page = await context.context.new_page()
         context.lp = lp(context.page)
         context.ep = ep(context.page)
+        context.sv = sv(context.page)
+        context.np = np(context.page)
 
         context.page.set_default_timeout(60000)
 
     context.loop.run_until_complete(setup())
-
+    
+   
 
 
 def after_step(context, step):
@@ -77,6 +82,7 @@ def after_step(context, step):
 def after_scenario(context, scenario):
 
     async def teardown():
+        await context.context.close()
 
         if hasattr(context, "context"):
             await context.context.close()
@@ -89,6 +95,7 @@ def after_scenario(context, scenario):
 
     context.loop.run_until_complete(teardown())
     context.loop.close()
+    
 
 
 def after_all(context):

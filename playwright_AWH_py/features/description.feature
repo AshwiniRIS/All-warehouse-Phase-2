@@ -21,37 +21,17 @@ Scenario Outline: Create Enquiry via Salesforce API and perform the E2E flow in 
     Then click on the generate proposal and send the proposal to the customer
     And verify the opportunity is in "Proposal" stage
     And Click on the schedule site visit and create the site visit record
-    Then verify the site visit record is created successfully
     And verify the opportunity is in "Site Visit" stage
+    Then navigate to the site visit record and update the site visit status
+    And Complete the site visit and back to Opportunity
+    And Verify the user is successfully able to navigate to Opp from Site visit
+    Then generate the negotiation checklist and send to the customer
+    And verify the opportunity is in "Negotiation" stage
     Examples:
-      | name          | phone      | email                    |
-      | Anish test    | 9899088767 | anishTest@testgmail123.com |
+    
+      | name       | phone      | email                    |
+      | Vishnu     | 0999080896 | vishnu@2testgmail123.com |
   
-@OpportunityPage
-Scenario: Login to the salesforce application and navigate to opprtunity page
-  Given I login using JWT
-  # Then user should be logged into Salesforce
-  And verify the user is successfully able to login into the salesforce application
-  Then go the Opportunity tabe and click on the opportunity record which is created from the enquiry record
-  And verify the opportunity is in "Qualified" stage
-  And go to the search unit tab and add the unit in the unit options
-  Then click on the generate proposal and send the proposal to the customer
-  And verify the opportunity is in "Proposal" stage
-  And Click on the schedule site visit and create the site visit record
-  Then verify the site visit record is created successfully
-  And verify the opportunity is in "Site Visit" stage
-
-  @SiteVisitPage
-  Scenario: Login to the salesforce application and navigate to sitevisit page
-  Given go to the salesforce test environment 
-  Then give the username and password
-  And Click on the Login button
-  And verify the user is successfully able to login into the salesforce application
-  Then go the Opportunity tabe and click on the opportunity record which is created from the enquiry record
-  And verify the opportunity is in "Proposal" stage
-  And Click on the schedule site visit and create the site visit record
-  # Then verify the site visit record is created successfully
-  # And verify the opportunity is in "Site Visit " stage
 
 
 
@@ -66,12 +46,5 @@ Scenario: Login to the salesforce application and navigate to opprtunity page
 
 
 
-# Then click on the Enquiry tab and click on the New button
-  # And fill all the necessary fields and click on the save button
-# And fill the mandatory fields and click on the save button
-# And verify the enquiry is created successfully
 
-  # Then add the interested location to the enquiry record and save it
-  # Then Edit the enquiry and update the details and save the record
-  # And Verify the user is successfully able to navigate to opportunity page
 

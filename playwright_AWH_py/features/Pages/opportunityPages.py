@@ -4,7 +4,7 @@ class opportunityPages:
 
     def __init__(self,page):
         self.page = page
-    enquiry_name = "Ferzina"
+    enquiry_name = "Anish test"
 
     
     async def navigateToOpp(self):
