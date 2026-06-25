@@ -154,6 +154,8 @@ class enquiryPages:
     await enquiry_link.wait_for(state="visible", timeout=20000)
     await enquiry_link.click()
     print("Enquiry record opened")
+    await self.page.wait_for_timeout(10000) 
+
 
   async def ClosedEnquiry(self):
 
